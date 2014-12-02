@@ -53,6 +53,71 @@ def unspent(*args):
     return u
 
 
+# Gets the unspent outputs of one or more dogecoin addresses
+def dogecoin_unspent(*args):
+    # Valid input formats: unspent([addr1, addr2,addr3])
+    #                      unspent(addr1, addr2, addr3)
+    if len(args) == 0:
+        return []
+    elif isinstance(args[0], list):
+        addrs = args[0]
+    else:
+        addrs = args
+    u = []
+    for a in addrs:
+        try:
+            data = pybitcointools.make_request('https://dogechain.info/api/v1/unspent/{}'.format(a))
+        except Exception, e:
+            if str(e) == 'No free outputs to spend':
+                continue
+            else:
+                raise Exception(e)
+        try:
+            jsonobj = json.loads(data)
+            for o in jsonobj["unspent_outputs"]:
+                h = o['tx_hash']
+                u.append({
+                    "output": h+':'+str(o['tx_output_n']),
+                    "value": int(o['value'])
+                })
+        except:
+            raise Exception("Failed to decode data: "+data)
+    return u
+
+
+
+# Gets the unspent outputs of one or more litecoin addresses
+def litecoin_unspent(*args):
+    # Valid input formats: unspent([addr1, addr2,addr3])
+    #                      unspent(addr1, addr2, addr3)
+    if len(args) == 0:
+        return []
+    elif isinstance(args[0], list):
+        addrs = args[0]
+    else:
+        addrs = args
+    u = []
+    for a in addrs:
+        try:
+            data = pybitcointools.make_request('https://litecoin.toshi.io/api/v0/addresses/{}/unspent_outputs'.format(a))
+        except Exception, e:
+            if str(e) == 'No free outputs to spend':
+                continue
+            else:
+                raise Exception(e)
+        try:
+            jsonobj = json.loads(data)
+            for o in jsonobj["unspent_outputs"]:
+                h = o['transaction_hash']
+                u.append({
+                    "output": h+':'+str(o['output_index']),
+                    "value": o['amount']
+                })
+        except:
+            raise Exception("Failed to decode data: "+data)
+    return u
+
+
 def blockr_unspent(*args):
     # Valid input formats: blockr_unspent([addr1, addr2,addr3])
     #                      blockr_unspent(addr1, addr2, addr3)
