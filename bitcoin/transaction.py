@@ -203,10 +203,14 @@ def mk_scripthash_script(addr):
 
 
 def address_to_script(addr):
-    if addr[0] == '3' or addr[0] == '2':
+    # 3/2 bitcoin and litecoin. 9/A dogecoin 
+    if addr[0] == '3' or addr[0] == '2' or addr[0]=='9' or addr[0]=='A':
         return mk_scripthash_script(addr)
-    else:
+    # 1 bitcoin, L litecoin, D dogecoin 
+    elif addr[0]=='1' or addr[0]=='L' or addr[0]=='D':
         return mk_pubkey_script(addr)
+    else:
+        raise Exception("Unrecognized address head") 
 
 # Output script to address representation
 

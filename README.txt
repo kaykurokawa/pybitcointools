@@ -1,3 +1,11 @@
+This is a fork of pybitcointools to contain better compatibility with altcoins, with some additional utility functions that I've found useful. 
+
+* Dogecoin/Litecoin support
+* Make OPRETURN Transactions 
+
+- Umpei Kay Kurokawa 
+
+
 # Pybitcointools, Python library for Bitcoin signatures and transactions
 
 ### Advantages:
