@@ -66,7 +66,7 @@ def dogecoin_unspent(*args):
     u = []
     for a in addrs:
         try:
-            data = pybitcointools.make_request('https://dogechain.info/api/v1/unspent/{}'.format(a))
+            data = make_request('https://dogechain.info/api/v1/unspent/{}'.format(a))
         except Exception, e:
             if str(e) == 'No free outputs to spend':
                 continue
@@ -99,7 +99,7 @@ def litecoin_unspent(*args):
     u = []
     for a in addrs:
         try:
-            data = pybitcointools.make_request('https://litecoin.toshi.io/api/v0/addresses/{}/unspent_outputs'.format(a))
+            data = make_request('https://litecoin.toshi.io/api/v0/addresses/{}/unspent_outputs'.format(a))
         except Exception, e:
             if str(e) == 'No free outputs to spend':
                 continue
