@@ -415,6 +415,52 @@ def mktx(*args):
     return serialize(txobj)
 
 
+# make op_return metadata transaction
+# note that this will use only as many inputs as is required to
+# cover the transaction fee (0.1 mBTC). Any bitcoins that isn't
+# consumed as transaction fee will be returned. 
+def mktx_opreturn(ins,transaction_fee,op_return_data):
+
+    txobj = {"locktime": 0, "version": 1, "ins": [], "outs": []}
+    total_in_value=0
+    for i in ins:
+
+        total_in_value+=i["value"]
+        return_address=i["address"] 
+        if isinstance(i, dict) and "outpoint" in i:
+            txobj["ins"].append(i)
+
+        else:
+            if isinstance(i, dict) and "output" in i:
+                i = i["output"]
+            txobj["ins"].append({
+                "outpoint": {"hash": i[:64], "index": int(i[65:])},
+                "script": "",
+                "sequence": 4294967295
+            })
+
+        #only use as much input as is required to cover transaction fee
+        if total_in_value >= transaction_fee:
+            break 
+    if total_in_value < transaction_fee:
+        raise Exception("Not enough to bitcoins to cover transaction fees") 
+    out_obj={}
+    len_metadata=chr(len(op_return_data)/2).encode('hex')
+    out_obj["script"]='\x6a'.encode('hex')+len_metadata+op_return_data
+
+    out_obj["value"]=0 
+    txobj["outs"].append(out_obj) 
+    if total_in_value > transaction_fee:
+        out_obj={}
+        out_obj["script"]=address_to_script(return_address) 
+        out_obj["value"]= total_in_value - transaction_fee #amount minus transaction fee 0.0001 BTC
+        txobj["outs"].append(out_obj) 
+   
+    return ( serialize(txobj),len(txobj["ins"]) )
+
+
+
+
 def select(unspent, value):
     value = int(value)
     high = [u for u in unspent if u["value"] >= value]
