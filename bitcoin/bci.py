@@ -107,7 +107,7 @@ def litecoin_unspent(*args):
                 raise Exception(e)
         try:
             jsonobj = json.loads(data)
-            for o in jsonobj["unspent_outputs"]:
+            for o in jsonobj:
                 h = o['transaction_hash']
                 u.append({
                     "output": h+':'+str(o['output_index']),
